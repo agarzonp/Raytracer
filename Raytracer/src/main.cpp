@@ -7,8 +7,18 @@
 
 #include "Input/Input.h"
 
+#include "RaytracerApp.h"
+
 int main()
 {
+	// init RaytracerApp
+	RaytracerApp raytracerApp;
+	if (!raytracerApp.Init())
+	{
+		std::cerr << "RaytracerApp init failed!" << std::endl;
+		return -1;
+	}
+
 	// init glfw
 	if (!glfwInit())
 	{
@@ -22,7 +32,7 @@ int main()
 	//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // only support modern opengl
 
 	// create the window
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Raytracer", nullptr, nullptr);
+	GLFWwindow* window = glfwCreateWindow(raytracerApp.GetWidth(), raytracerApp.GetHeight(), raytracerApp.GetTitle(), nullptr, nullptr);
 	if (!window)
 	{
 		std::cerr << "GLFW failed to create the window!" << std::endl;
@@ -43,8 +53,7 @@ int main()
 
 	// init input
 	Input::SetWindow(window);
-	InputListener dummyListener;
-	Input::SetListener(&dummyListener);
+	Input::SetListener(&raytracerApp);
 	glfwSetKeyCallback(window, Input::OnKeyCallback);
 	glfwSetMouseButtonCallback(window, Input::OnMouseButtonCallback);
 	glfwSetScrollCallback(window, Input::OnMouseScrollCallback);
@@ -57,6 +66,8 @@ int main()
 
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		raytracerApp.MainLoop();
 
 		glfwSwapBuffers(window);
 	}
