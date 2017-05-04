@@ -4,20 +4,23 @@
 #include <string>
 
 #include "Input/Input.h"
+#include "RaytracerAppMachine/RaytracerAppMachine.h"
 
 class RaytracerApp : public InputListener
 {
 	// window width and height
-	int width;
-	int height;
+	int width = -1;
+	int height = -1;
 
+	// window title
 	std::string title;
 
+	// current state and the state machine
+	ERaytracerAppState state;
+	RaytracerAppMachine raytracerAppMachine;
+
 public:
-	RaytracerApp()
-		: width(-1)
-		, height(-1)
-	{};
+	RaytracerApp(){};
 	~RaytracerApp() {};
 
 	int GetWidth() { return width; }
@@ -32,6 +35,10 @@ public:
 		height = 600;
 		title = "Raytracing";
 
+		// init state machine
+		state = ERaytracerAppState::RENDER;
+		raytracerAppMachine.Init(state);
+
 		return true;
 	}
 
@@ -45,12 +52,12 @@ private:
 
 	void Update()
 	{
-		// Update proper state via state machine
+		raytracerAppMachine.Update();
 	}
 
 	void Render()
 	{
-		// Render proper state via state machine
+		raytracerAppMachine.Render();
 	}
 };
 

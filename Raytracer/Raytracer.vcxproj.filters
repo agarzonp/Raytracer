@@ -19,8 +19,11 @@
     <Filter Include="Source Files\Input">
       <UniqueIdentifier>{e5fd0ce3-61a1-4a0f-a878-9e711bf74c0d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\RaytracerMachine">
+    <Filter Include="Source Files\RaytracerAppMachine">
       <UniqueIdentifier>{d9acfb9d-aa59-45c7-93ce-422c145b048d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\RaytracerAppMachine\RaytracerAppStates">
+      <UniqueIdentifier>{3328c108-e91d-4544-80b0-72b89aa7ed9b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +37,21 @@
     </ClInclude>
     <ClInclude Include="src\RaytracerApp.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachine.h">
+      <Filter>Source Files\RaytracerAppMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppState.h">
+      <Filter>Source Files\RaytracerAppMachine\RaytracerAppStates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates.h">
+      <Filter>Source Files\RaytracerAppMachine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateRender.h">
+      <Filter>Source Files\RaytracerAppMachine\RaytracerAppStates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateSelectScene.h">
+      <Filter>Source Files\RaytracerAppMachine\RaytracerAppStates</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
