@@ -35,4 +35,4 @@ Release/
 
 # Others
 *.db
-Raytracer/Raytracer/Raytracer.VC.VC.opendb
+*.opendb
