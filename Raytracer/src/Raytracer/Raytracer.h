@@ -4,6 +4,8 @@
 #include <chrono>
 #include <sstream>
 
+#include "../ThreadPool/ThreadPool.h"
+
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
 enum class RaytracerState
@@ -22,15 +24,22 @@ struct RaytracerConfiguration
 
 class Raytracer
 {
+	// width and height
 	int width = -1;
 	int height = -1;
+
+	// pixels buffer
 	float* buffer = nullptr;
 
+	// raytracer state
 	RaytracerState state = RaytracerState::IDLE;
 
 	// to keep track of rendering time
 	TimePoint renderStart;
 	std::string renderTimeStr;
+
+	// threadpool
+	ThreadPool threadPool;
 
 public:
 	
@@ -57,8 +66,9 @@ public:
 		{
 			state = RaytracerState::RENDERING;
 
-			// TO-DO: launch Render function in a new thread!	
-			Render();
+			// submit render task to the threadPool so we do the rendering in a different thread
+			auto task = std::bind(&Raytracer::Render, this);
+			threadPool.AddTask(task);
 		}
 	}
 
@@ -79,7 +89,7 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
-		for (int y = 0; y < height; y++)
+		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
 			{
