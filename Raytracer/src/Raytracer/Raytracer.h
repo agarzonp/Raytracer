@@ -1,6 +1,11 @@
 #ifndef RAYTRACER_H
 #define RAYTRACER_H
 
+#include <chrono>
+#include <sstream>
+
+typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
+
 enum class RaytracerState
 {
 	IDLE,
@@ -22,6 +27,10 @@ class Raytracer
 	float* buffer = nullptr;
 
 	RaytracerState state = RaytracerState::IDLE;
+
+	// to keep track of rendering time
+	TimePoint renderStart;
+	std::string renderTimeStr;
 
 public:
 	
@@ -68,6 +77,8 @@ public:
 		printf("Rendering STARTED!\n");
 		printf("Rendering...\n");
 
+		renderStart = std::chrono::system_clock::now();
+		
 		for (int y = 0; y < height; y++)
 		{
 			for (int x = 0; x < width; x++)
@@ -83,19 +94,14 @@ public:
 					// early exit if the rendering has been cancelled
 					// Warning: race condition allowed, at worst another iteration
 
-					// back to idle
-					state = RaytracerState::IDLE;
-
-					printf("Rendering CANCELLED!\n");
+					OnRenderingEnded(true);
+					
 					return;
 				}
 			}		
 		}
-		
-		printf("Rendering DONE!\n");
 
-		// back to idle
-		state = RaytracerState::IDLE;
+		OnRenderingEnded(false);
 	}
 
 protected:
@@ -104,6 +110,30 @@ protected:
 
 private:
 	
+	// on rendering ended
+	void OnRenderingEnded(bool cancelled)
+	{
+		// output render ended status and time
+		renderTimeStr = GetTimeStr(renderStart, std::chrono::system_clock::now());
+		printf("Rendering %s!. Render took: %s\n", cancelled ? "CANCELLED" : "DONE", renderTimeStr.c_str());
+
+		// back to idle
+		state = RaytracerState::IDLE;
+	}
+
+	// GetTimeStr
+	std::string GetTimeStr(TimePoint start, TimePoint end)
+	{
+		size_t total = (size_t)std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+		size_t seconds = total / 1000;
+		size_t milliseconds = total - (seconds * 1000);
+
+		std::stringstream ss;
+		ss << seconds << "s" << " " << milliseconds << "ms";
+
+		return ss.str();
+	}
 };
 
 #endif // !RAYTRACER_H
