@@ -20,9 +20,15 @@ class RaytracerApp : public InputListener
 	ERaytracerAppState state;
 	RaytracerAppMachine raytracerAppMachine;
 
+	// pixelsBuffer
+	float* pixelsBuffer = nullptr;
+
 public:
 	RaytracerApp(){};
-	~RaytracerApp() {};
+	~RaytracerApp() 
+	{
+		delete[] pixelsBuffer;
+	};
 
 	int GetWidth() { return width; }
 	int GetHeight() { return height; }
@@ -37,6 +43,10 @@ public:
 		height = 600;
 		title = "Raytracing";
 
+		// init pixel buffer
+		unsigned numPixels = width * height;
+		pixelsBuffer = new float[numPixels * 4]; // 4 -> RGBA
+
 		// init state machine
 		state = ERaytracerAppState::RENDER;
 		raytracerAppMachine.Init(state);
@@ -45,6 +55,7 @@ public:
 		RaytracerConfiguration raytracerConfig;
 		raytracerConfig.width = width;
 		raytracerConfig.height = height;
+		raytracerConfig.buffer = pixelsBuffer;
 		Raytracer::Get().SetConfiguration(raytracerConfig);
 
 		return true;
@@ -65,6 +76,9 @@ public:
 	{
 		raytracerAppMachine.Update();
 		raytracerAppMachine.Render();
+
+		// draw current pixels buffer
+		glDrawPixels(width, height, GL_RGBA, GL_FLOAT, pixelsBuffer);
 	}
 
 private:
