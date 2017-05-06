@@ -25,6 +25,9 @@
     <Filter Include="Source Files\RaytracerAppMachine\RaytracerAppStates">
       <UniqueIdentifier>{3328c108-e91d-4544-80b0-72b89aa7ed9b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ThreadPool">
+      <UniqueIdentifier>{3f873740-d325-4890-bc66-1a938d58b52e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -55,6 +58,15 @@
     </ClInclude>
     <ClInclude Include="src\Raytracer\Raytracer.h">
       <Filter>Source Files\Raytracer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThreadPool\ThreadPool.h">
+      <Filter>Source Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThreadPool\ThreadTask.h">
+      <Filter>Source Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ThreadPool\ThreadTaskResult.h">
+      <Filter>Source Files\ThreadPool</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
