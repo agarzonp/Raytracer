@@ -88,7 +88,19 @@ public:
 				// ray intersection
 
 				// shading
+				float r = float(x) / float(width);
+				float g = float(y) / float(height);
+				float b = 0.4f;
+				float a = 1.0f;
 
+				unsigned pixelIndex = (y*width + x) * 4;
+
+				buffer[pixelIndex + 0] = r;
+				buffer[pixelIndex + 1] = g;
+				buffer[pixelIndex + 2] = b;
+				buffer[pixelIndex + 3] = a;
+
+				// check for rendering cancelled
 				if (state == RaytracerState::RENDERING_CANCELLED)
 				{
 					// early exit if the rendering has been cancelled
