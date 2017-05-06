@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Input/Input.h"
+#include "Raytracer/Raytracer.h"
 #include "RaytracerAppMachine/RaytracerAppMachine.h"
 
 class RaytracerApp : public InputListener
@@ -28,6 +29,7 @@ public:
 
 	const char* GetTitle() { return title.c_str(); }
 
+	// init
 	bool Init()
 	{
 		// TO-DO: read a configuration file and set the properties
@@ -39,26 +41,35 @@ public:
 		state = ERaytracerAppState::RENDER;
 		raytracerAppMachine.Init(state);
 
+		// init raitracer
+		RaytracerConfiguration raytracerConfig;
+		raytracerConfig.width = width;
+		raytracerConfig.height = height;
+		Raytracer::Get().SetConfiguration(raytracerConfig);
+
 		return true;
 	}
 
+	// on key pressed
+	void OnKeyPressed(int key) override
+	{
+		auto& currentState = raytracerAppMachine.GetCurrentState();
+		if (currentState)
+		{
+			currentState->OnKeyPressed(key);
+		}
+	}
+
+	// mainloop
 	void MainLoop()
 	{
-		Update();
-		Render();
+		raytracerAppMachine.Update();
+		raytracerAppMachine.Render();
 	}
 
 private:
 
-	void Update()
-	{
-		raytracerAppMachine.Update();
-	}
 
-	void Render()
-	{
-		raytracerAppMachine.Render();
-	}
 };
 
 #endif // !RAYTRACER_APP_H

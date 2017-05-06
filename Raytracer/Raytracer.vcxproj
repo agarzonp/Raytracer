@@ -136,6 +136,7 @@
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppState.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateRender.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateSelectScene.h" />
+    <ClInclude Include="src\Raytracer\Raytracer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

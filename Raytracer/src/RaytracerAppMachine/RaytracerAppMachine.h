@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "../Input/Input.h"
+
 #include "RaytracerAppStates.h"
 
 class RaytracerAppMachine
@@ -13,6 +15,10 @@ public:
 	RaytracerAppMachine() {};
 	~RaytracerAppMachine() {};
 
+	// get current state
+	std::unique_ptr<RaytracerAppState> & GetCurrentState() { return currentState; }
+
+	// init
 	void Init(ERaytracerAppState state)
 	{
 		SetState(state);

@@ -53,5 +53,8 @@
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateSelectScene.h">
       <Filter>Source Files\RaytracerAppMachine\RaytracerAppStates</Filter>
     </ClInclude>
+    <ClInclude Include="src\Raytracer\Raytracer.h">
+      <Filter>Source Files\Raytracer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
