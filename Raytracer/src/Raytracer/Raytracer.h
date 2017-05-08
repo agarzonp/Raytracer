@@ -6,6 +6,8 @@
 
 #include "../ThreadPool/ThreadPool.h"
 
+#include "../Geom3D/Geom3D.h"
+
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
 enum class RaytracerState
@@ -41,6 +43,8 @@ class Raytracer
 	// threadpool
 	ThreadPool threadPool;
 
+	// Ray
+	Geom3D::Ray ray;
 public:
 	
 	// Singleton instance
@@ -89,26 +93,40 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
+		// near plane
+		float nearPlaneWidth  = float(width)/100.0f;
+		float nearPlaneHeight = float(height)/100.0f;
+		glm::vec3 nearPlaneBottomLeft = glm::vec3(-nearPlaneWidth*0.5f, -nearPlaneHeight*0.5f, -1.0f);
+
+		// camera position
+		glm::vec3 cameraPos(0.0f, 0.0f, 0.0f);
+		
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
 			{
 				// ray generation
+				float u = float(x) / float(width);
+				float v = float(y) / float(height);
+
+				glm::vec3 rayDir = nearPlaneBottomLeft + glm::vec3(u * nearPlaneWidth, 0.0f, 0.0f) + glm::vec3(0.0f, v*nearPlaneHeight, 0.0f);
+				Geom3D::Ray ray(cameraPos, rayDir);
 
 				// ray intersection
 
 				// shading
-				float r = float(x) / float(width);
-				float g = float(y) / float(height);
-				float b = 0.4f;
-				float a = 1.0f;
-
+				// Temporal blend from white to blue
+				glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
+				float t = 0.5f*(rayDirNormalized.y + 1.0f);
+				glm::vec4 colour = (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
+				
+				// set pixel colour in the buffer
 				unsigned pixelIndex = (y*width + x) * 4;
 
-				buffer[pixelIndex + 0] = r;
-				buffer[pixelIndex + 1] = g;
-				buffer[pixelIndex + 2] = b;
-				buffer[pixelIndex + 3] = a;
+				buffer[pixelIndex + 0] = colour.r;
+				buffer[pixelIndex + 1] = colour.g;
+				buffer[pixelIndex + 2] = colour.b;
+				buffer[pixelIndex + 3] = colour.a;
 
 				// check for rendering cancelled
 				if (state == RaytracerState::RENDERING_CANCELLED)
