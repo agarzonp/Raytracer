@@ -28,6 +28,9 @@
     <Filter Include="Source Files\ThreadPool">
       <UniqueIdentifier>{3f873740-d325-4890-bc66-1a938d58b52e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Geom3D">
+      <UniqueIdentifier>{7c4c26ec-3d1f-4608-9ade-d7fa9d71b4b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -67,6 +70,12 @@
     </ClInclude>
     <ClInclude Include="src\ThreadPool\ThreadTaskResult.h">
       <Filter>Source Files\ThreadPool</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geom3D\Ray.h">
+      <Filter>Source Files\Geom3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geom3D\Geom3D.h">
+      <Filter>Source Files\Geom3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

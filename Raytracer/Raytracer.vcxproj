@@ -129,6 +129,8 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Geom3D\Geom3D.h" />
+    <ClInclude Include="src\Geom3D\Ray.h" />
     <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\RaytracerApp.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachine.h" />
