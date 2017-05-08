@@ -31,6 +31,9 @@
     <Filter Include="Source Files\Geom3D">
       <UniqueIdentifier>{7c4c26ec-3d1f-4608-9ade-d7fa9d71b4b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Geom3D\Shapes">
+      <UniqueIdentifier>{e9d3a968-c76d-4ef7-9770-6ab9b44b0c37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -76,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="src\Geom3D\Geom3D.h">
       <Filter>Source Files\Geom3D</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geom3D\Shapes\Shape.h">
+      <Filter>Source Files\Geom3D\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geom3D\Shapes\Sphere.h">
+      <Filter>Source Files\Geom3D\Shapes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
