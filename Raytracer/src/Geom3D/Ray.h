@@ -34,7 +34,7 @@ namespace Geom3D
 		const glm::vec3& Direction() const { return d; }
 
 		// point at t
-		glm::vec3 PointAtT(float t) { return o + t*d; }
+		glm::vec3 PointAtT(float t) const { return o + t*d; }
 	};
 }
 

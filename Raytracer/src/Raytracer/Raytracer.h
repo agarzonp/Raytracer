@@ -114,7 +114,9 @@ public:
 
 				// ray intersection
 				Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -5.0f), 3.0f);
-				bool raycast = sphere.Intersect(ray);
+
+				Geom3D::RaycastHit raycastHit;
+				bool raycast = sphere.Raycast(ray, raycastHit);
 
 				// shading
 				// Temporal blend from white to blue

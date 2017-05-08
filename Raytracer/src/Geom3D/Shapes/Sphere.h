@@ -32,16 +32,30 @@ namespace Geom3D
 		glm::vec3& Center() { return c; }
 		float& Radius() { return r; }
 
-		// Intersect
-		bool Intersect(const Ray& ray) override
+		// Raycast
+		bool Raycast(const Ray& ray, RaycastHit& raycastHit) override
 		{
 			glm::vec3 cc = ray.Origin() - c;
 			float a = glm::dot(ray.Direction(), ray.Direction());
-			float b = 2.0f * glm::dot(cc, ray.Direction());
+			float b = glm::dot(cc, ray.Direction());
 			float c = glm::dot(cc, cc) - r*r;
-			float discriminant = b*b - 4*a*c;
+			float discriminant = b*b - a*c;
 
-			return (discriminant > 0);
+			if (discriminant > 0)
+			{
+				float discriminantSq = sqrtf(discriminant);
+				float t1 = (-b - discriminantSq) / a;
+				float t2 = (-b + discriminantSq) / a;
+
+				float t = std::min(t1, t2);
+
+				raycastHit.pos = ray.PointAtT(t);
+				raycastHit.normal = glm::normalize(ray.Direction());
+
+				return true;
+			}
+
+			return false;
 		}
 
 	private:

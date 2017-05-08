@@ -7,13 +7,19 @@
 
 namespace Geom3D
 {
+	struct RaycastHit
+	{
+		glm::vec3 pos;
+		glm::vec3 normal;
+	};
+
 	class Shape
 	{
 	public:
 
 		virtual ~Shape() {};
 
-		virtual bool Intersect(const Ray& ray) = 0;
+		virtual bool Raycast(const Ray& ray, RaycastHit& raycastHit) = 0;
 
 	protected:
 
