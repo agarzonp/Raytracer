@@ -113,12 +113,14 @@ public:
 				Geom3D::Ray ray(cameraPos, rayDir);
 
 				// ray intersection
+				Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -5.0f), 3.0f);
+				bool raycast = sphere.Intersect(ray);
 
 				// shading
 				// Temporal blend from white to blue
 				glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
 				float t = 0.5f*(rayDirNormalized.y + 1.0f);
-				glm::vec4 colour = (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
+				glm::vec4 colour = raycast ? glm::vec4(1.0f, 0.0f, 0.0f, 0.0f) : (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
 				
 				// set pixel colour in the buffer
 				unsigned pixelIndex = (y*width + x) * 4;
