@@ -112,36 +112,24 @@ public:
 				glm::vec3 rayDir = nearPlaneBottomLeft + glm::vec3(u * nearPlaneWidth, 0.0f, 0.0f) + glm::vec3(0.0f, v*nearPlaneHeight, 0.0f);
 				Geom3D::Ray ray(cameraPos, rayDir);
 
-				// ray intersection
-				Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f);
-
+				// raycast
 				Geom3D::RaycastHit raycastHit;
-				bool raycast = sphere.Raycast(ray, raycastHit);
-
-				// shading
 				glm::vec4 colour;
-				
-				if(raycast)
+				if(Raycast(ray, raycastHit))
 				{
-					// gradient according to the normal 
-					glm::vec3& normal = raycastHit.normal;
-					colour = glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 2.0f) * 0.5f;
+					// shade
+					Shade(raycastHit, colour);
 				}
 				else
 				{
-					// blend from white to blue
+					// set background colour: blend from white to blue
 					glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
 					float t = 0.5f*(rayDirNormalized.y + 1.0f);
 					colour = (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
 				}
 				
-				// set pixel colour in the buffer
-				unsigned pixelIndex = (y*width + x) * 4;
-
-				buffer[pixelIndex + 0] = colour.r;
-				buffer[pixelIndex + 1] = colour.g;
-				buffer[pixelIndex + 2] = colour.b;
-				buffer[pixelIndex + 3] = colour.a;
+				// set pixel colour
+				SetPixelColour(x, y, colour);
 
 				// check for rendering cancelled
 				if (state == RaytracerState::RENDERING_CANCELLED)
@@ -162,6 +150,34 @@ public:
 protected:
 	Raytracer() : state(RaytracerState::IDLE) {}
 	~Raytracer() {};
+
+	// raycast
+	inline bool Raycast(const Geom3D::Ray& ray, Geom3D::RaycastHit& raycastHit)
+	{
+		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f);
+		bool raycast = sphere.Raycast(ray, raycastHit);
+		
+		return raycast;
+	}
+
+	// shade
+	inline void Shade(const Geom3D::RaycastHit& raycastHit, glm::vec4& colour)
+	{
+		// temporal shading: gradient according to the normal 
+		const glm::vec3& normal = raycastHit.normal;
+		colour = glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 2.0f) * 0.5f;
+	}
+
+	// set pixel colour
+	inline void SetPixelColour(int x, int y, const glm::vec4& colour)
+	{
+		unsigned pixelIndex = (y*width + x) * 4;
+
+		buffer[pixelIndex + 0] = colour.r;
+		buffer[pixelIndex + 1] = colour.g;
+		buffer[pixelIndex + 2] = colour.b;
+		buffer[pixelIndex + 3] = colour.a;
+	}
 
 private:
 	
