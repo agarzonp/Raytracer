@@ -154,29 +154,35 @@ protected:
 
       Geom3D::Ray ray = camera.GetRay(u, v);
 
-      // raycast
-      Geom3D::RaycastHit raycastHit;
-      if (Raycast(ray, raycastHit))
-      {
-        // shade
-        glm::vec4 sampleColour;
-        Shade(raycastHit, sampleColour);
-        pixelColour += sampleColour;
-      }
-      else
-      {
-        // set background colour: blend from white to blue
-        glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
-        float t = 0.5f*(rayDirNormalized.y + 1.0f);
-        pixelColour += (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
-      }
-    }
+			// calculate pixel colour for the following ray
+			pixelColour += CalculatePixelColour(ray, 0);
+		}
 
     // avarage the colour
     pixelColour /= float(antialiasingSamples);
 
     return pixelColour;
   }
+
+	// calculate pixel colour
+	inline glm::vec4 CalculatePixelColour(const Geom3D::Ray& ray, int recursionDepth)
+	{
+		glm::vec4 colour;
+
+		// raycast
+		Geom3D::RaycastHit raycastHit;
+		if (Raycast(ray, raycastHit))
+		{
+			// shade
+			Shade(raycastHit, colour);
+		}
+		else
+		{
+			colour = GetBackgroundColour(ray);
+		}
+
+		return colour;
+	}
 
 	// raycast
 	inline bool Raycast(const Geom3D::Ray& ray, Geom3D::RaycastHit& raycastHit)
@@ -200,6 +206,15 @@ protected:
 		// temporal shading: gradient according to the normal 
 		const glm::vec3& normal = raycastHit.hitNormal;
 		colour = glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 2.0f) * 0.5f;
+	}
+
+	// get background colour
+	inline glm::vec4 GetBackgroundColour(const Geom3D::Ray& ray)
+	{
+		// blend from white to blue
+		glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
+		float t = 0.5f*(rayDirNormalized.y + 1.0f);
+		return (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
 	}
 
 	// set pixel colour
