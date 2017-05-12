@@ -11,9 +11,12 @@ namespace Geom3D
 {
   struct RaycastHit
   {
-    glm::vec3 pos;
-    glm::vec3 normal;
-    const Material* material;
+    Ray ray;
+   
+    glm::vec3 hitPos;
+    glm::vec3 hitNormal;
+
+    const Material* hitMaterial = nullptr;
   };
 
 	class Shape

@@ -14,6 +14,11 @@
 
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
+// random number generation
+std::random_device randomDevice;
+std::mt19937 randomEngine(randomDevice());
+std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
+
 enum class RaytracerState
 {
 	IDLE,
@@ -103,49 +108,13 @@ public:
     // camera
     Camera camera(width, height);
 
-    // random number generation
-    std::random_device randomDevice;
-    std::mt19937 randomEngine(randomDevice());
-    std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
-
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
 			{
-        // Antialiasing by sending more rays trough the same pixel but randomly offset
-        glm::vec4 pixelColour(0.0f, 0.0f, 0.0f, 0.0f);
-        for (int sample = 0; sample < antialiasingSamples; sample++)
-        {
-          // ray generation
-          float xOffset = distribution(randomEngine);
-          float yOffset = distribution(randomEngine);
-          float u = (float(x) + xOffset) / float(width);
-          float v = (float(y) + yOffset) / float(height);
-
-          Geom3D::Ray ray = camera.GetRay(u, v);
-
-          // raycast
-          Geom3D::RaycastHit raycastHit;
-          if (Raycast(ray, raycastHit))
-          {
-            // shade
-            glm::vec4 sampleColour;
-            Shade(raycastHit, sampleColour);
-            pixelColour += sampleColour;
-          }
-          else
-          {
-            // set background colour: blend from white to blue
-            glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
-            float t = 0.5f*(rayDirNormalized.y + 1.0f);
-            pixelColour += (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
-          }
-        }
-
-        // avarage the colour
-        pixelColour /= float(antialiasingSamples);
+        //calculate pixel colour
+        glm::vec4 pixelColour = CalculatePixelColour(x, y, camera);
      
-				
 				// set pixel colour
 				SetPixelColour(x, y, pixelColour);
 
@@ -169,6 +138,46 @@ protected:
 	Raytracer() : state(RaytracerState::IDLE) {}
 	~Raytracer() {};
 
+  // calculate pixel colour
+  inline glm::vec4 CalculatePixelColour(int x, int y, Camera& camera)
+  {
+    // Note: we send more than one ray per pixel (randomly offset) in order to do antialiasing
+
+    glm::vec4 pixelColour(0.0f, 0.0f, 0.0f, 0.0f);
+    for (int sample = 0; sample < antialiasingSamples; sample++)
+    {
+      // ray generation
+      float xOffset = distribution(randomEngine);
+      float yOffset = distribution(randomEngine);
+      float u = (float(x) + xOffset) / float(width);
+      float v = (float(y) + yOffset) / float(height);
+
+      Geom3D::Ray ray = camera.GetRay(u, v);
+
+      // raycast
+      Geom3D::RaycastHit raycastHit;
+      if (Raycast(ray, raycastHit))
+      {
+        // shade
+        glm::vec4 sampleColour;
+        Shade(raycastHit, sampleColour);
+        pixelColour += sampleColour;
+      }
+      else
+      {
+        // set background colour: blend from white to blue
+        glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
+        float t = 0.5f*(rayDirNormalized.y + 1.0f);
+        pixelColour += (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
+      }
+    }
+
+    // avarage the colour
+    pixelColour /= float(antialiasingSamples);
+
+    return pixelColour;
+  }
+
 	// raycast
 	inline bool Raycast(const Geom3D::Ray& ray, Geom3D::RaycastHit& raycastHit)
 	{
@@ -177,6 +186,11 @@ protected:
 		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f, &diffuse);
 		bool raycast = sphere.Raycast(ray, raycastHit);
 		
+    if (raycast)
+    {
+      raycastHit.ray = ray;
+    }
+   
 		return raycast;
 	}
 
@@ -184,7 +198,7 @@ protected:
 	inline void Shade(const Geom3D::RaycastHit& raycastHit, glm::vec4& colour)
 	{
 		// temporal shading: gradient according to the normal 
-		const glm::vec3& normal = raycastHit.normal;
+		const glm::vec3& normal = raycastHit.hitNormal;
 		colour = glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 2.0f) * 0.5f;
 	}
 

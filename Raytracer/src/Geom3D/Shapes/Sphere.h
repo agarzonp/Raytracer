@@ -66,9 +66,9 @@ namespace Geom3D
 
 				float t = std::min(t1, t2);
 
-				raycastHit.pos = ray.PointAtT(t);
-				raycastHit.normal = glm::normalize(ray.Direction());
-        raycastHit.material = material;
+				raycastHit.hitPos = ray.PointAtT(t);
+				raycastHit.hitNormal = glm::normalize(ray.Direction());
+        raycastHit.hitMaterial = material;
 
 				return true;
 			}
