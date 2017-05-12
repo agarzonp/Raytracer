@@ -135,6 +135,9 @@
     <ClInclude Include="src\Geom3D\Shapes\Shape.h" />
     <ClInclude Include="src\Geom3D\Shapes\Sphere.h" />
     <ClInclude Include="src\Input\Input.h" />
+    <ClInclude Include="src\Materials\Material.h" />
+    <ClInclude Include="src\Materials\MaterialDiffuse.h" />
+    <ClInclude Include="src\Materials\Materials.h" />
     <ClInclude Include="src\RaytracerApp.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachine.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates.h" />

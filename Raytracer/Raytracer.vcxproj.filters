@@ -37,6 +37,9 @@
     <Filter Include="Source Files\Camera">
       <UniqueIdentifier>{e3688d66-59af-4572-a196-9285c1c588b4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Materials">
+      <UniqueIdentifier>{8707112f-8b26-4eef-8c93-a9b67e891dd1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -91,6 +94,15 @@
     </ClInclude>
     <ClInclude Include="src\Camera\Camera.h">
       <Filter>Source Files\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Materials\Materials.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Materials\Material.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Materials\MaterialDiffuse.h">
+      <Filter>Source Files\Materials</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

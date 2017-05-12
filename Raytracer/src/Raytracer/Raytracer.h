@@ -10,6 +10,7 @@
 #include "../Geom3D/Geom3D.h"
 
 #include "Camera/Camera.h"
+#include "Materials/Materials.h"
 
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
@@ -125,7 +126,6 @@ public:
 
           // raycast
           Geom3D::RaycastHit raycastHit;
-         
           if (Raycast(ray, raycastHit))
           {
             // shade
@@ -172,7 +172,9 @@ protected:
 	// raycast
 	inline bool Raycast(const Geom3D::Ray& ray, Geom3D::RaycastHit& raycastHit)
 	{
-		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f);
+    static MaterialDiffuse diffuse(glm::vec3(0.7f, 0.3f, 0.4f));
+
+		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f, &diffuse);
 		bool raycast = sphere.Raycast(ray, raycastHit);
 		
 		return raycast;

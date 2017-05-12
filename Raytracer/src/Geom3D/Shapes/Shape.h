@@ -5,13 +5,16 @@
 
 #include "../Ray.h"
 
+class Material;
+
 namespace Geom3D
 {
-	struct RaycastHit
-	{
-		glm::vec3 pos;
-		glm::vec3 normal;
-	};
+  struct RaycastHit
+  {
+    glm::vec3 pos;
+    glm::vec3 normal;
+    const Material* material;
+  };
 
 	class Shape
 	{

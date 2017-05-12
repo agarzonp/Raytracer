@@ -3,25 +3,40 @@
 
 #include "Shape.h"
 
+class Material;
+
 namespace Geom3D
 {
 	class Sphere : public Shape
 	{
+    // center and radius
 		glm::vec3 c;
 		float r;
+
+    // attached material
+    const Material* material;
 
 	public:
 		Sphere() 
 		: c(glm::vec3(0.0f, 0.0f, 0.0f))
 		, r(1.0f)
+    , material(nullptr)
 		{
 		};
 
 		Sphere(const glm::vec3& center, float radius)
 			: c(center)
 			, r(radius)
+      , material(nullptr)
 		{
 		};
+
+    Sphere(const glm::vec3& center, float radius, const Material* material_)
+      : c(center)
+      , r(radius)
+      , material(material_)
+    {
+    };
 
 		~Sphere() {};
 
@@ -31,6 +46,8 @@ namespace Geom3D
 
 		glm::vec3& Center() { return c; }
 		float& Radius() { return r; }
+
+    const Material* GetMaterial() const { return material; }
 
 		// Raycast
 		bool Raycast(const Ray& ray, RaycastHit& raycastHit) override
@@ -51,6 +68,7 @@ namespace Geom3D
 
 				raycastHit.pos = ray.PointAtT(t);
 				raycastHit.normal = glm::normalize(ray.Direction());
+        raycastHit.material = material;
 
 				return true;
 			}
