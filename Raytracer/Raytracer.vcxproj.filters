@@ -34,6 +34,9 @@
     <Filter Include="Source Files\Geom3D\Shapes">
       <UniqueIdentifier>{e9d3a968-c76d-4ef7-9770-6ab9b44b0c37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Camera">
+      <UniqueIdentifier>{e3688d66-59af-4572-a196-9285c1c588b4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -85,6 +88,9 @@
     </ClInclude>
     <ClInclude Include="src\Geom3D\Shapes\Sphere.h">
       <Filter>Source Files\Geom3D\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Camera\Camera.h">
+      <Filter>Source Files\Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

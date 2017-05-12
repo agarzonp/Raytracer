@@ -129,6 +129,7 @@
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\Geom3D\Geom3D.h" />
     <ClInclude Include="src\Geom3D\Ray.h" />
     <ClInclude Include="src\Geom3D\Shapes\Shape.h" />

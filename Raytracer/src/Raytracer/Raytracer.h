@@ -8,6 +8,8 @@
 
 #include "../Geom3D/Geom3D.h"
 
+#include "Camera/Camera.h"
+
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
 enum class RaytracerState
@@ -43,8 +45,6 @@ class Raytracer
 	// threadpool
 	ThreadPool threadPool;
 
-	// Ray
-	Geom3D::Ray ray;
 public:
 	
 	// Singleton instance
@@ -93,14 +93,9 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
-		// near plane
-		float nearPlaneWidth  = float(width)/100.0f;
-		float nearPlaneHeight = float(height)/100.0f;
-		glm::vec3 nearPlaneBottomLeft = glm::vec3(-nearPlaneWidth*0.5f, -nearPlaneHeight*0.5f, -1.0f);
+    // camera
+    Camera camera(width, height);
 
-		// camera position
-		glm::vec3 cameraPos(0.0f, 0.0f, 0.0f);
-		
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -109,8 +104,7 @@ public:
 				float u = float(x) / float(width);
 				float v = float(y) / float(height);
 
-				glm::vec3 rayDir = nearPlaneBottomLeft + glm::vec3(u * nearPlaneWidth, 0.0f, 0.0f) + glm::vec3(0.0f, v*nearPlaneHeight, 0.0f);
-				Geom3D::Ray ray(cameraPos, rayDir);
+				Geom3D::Ray ray = camera.GetRay(u, v);
 
 				// raycast
 				Geom3D::RaycastHit raycastHit;
