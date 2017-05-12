@@ -12,7 +12,7 @@ public:
  
   virtual ~Material() {};
 
-  virtual bool ScatterRay(const Geom3D::RaycastHit& hitInfo, glm::vec3& attenuationOut, Geom3D::Ray& rayOut) = 0;
+  virtual bool ScatterRay(const Geom3D::RaycastHit& hitInfo, glm::vec3& attenuationOut, Geom3D::Ray& rayOut) const = 0;
 
   // getters/setters
   const glm::vec3& Attenuation() const { return attenuation; }

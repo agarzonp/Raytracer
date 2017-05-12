@@ -143,7 +143,7 @@ protected:
   {
     // Note: we send more than one ray per pixel (randomly offset) in order to do antialiasing
 
-    glm::vec4 pixelColour(0.0f, 0.0f, 0.0f, 0.0f);
+    glm::vec3 pixelColour(0.0f, 0.0f, 0.0f);
     for (int sample = 0; sample < antialiasingSamples; sample++)
     {
       // ray generation
@@ -161,20 +161,25 @@ protected:
     // avarage the colour
     pixelColour /= float(antialiasingSamples);
 
-    return pixelColour;
+    return glm::vec4(pixelColour, 1.0f);
   }
 
 	// calculate pixel colour
-	inline glm::vec4 CalculatePixelColour(const Geom3D::Ray& ray, int recursionDepth)
+	inline glm::vec3 CalculatePixelColour(const Geom3D::Ray& ray, int recursionDepth)
 	{
-		glm::vec4 colour;
+		glm::vec3 colour;
 
 		// raycast
 		Geom3D::RaycastHit raycastHit;
 		if (Raycast(ray, raycastHit))
 		{
-			// shade
-			Shade(raycastHit, colour);
+			// recursively scatter the ray
+			glm::vec3 attenuation;
+			Geom3D::Ray scatteredRay;
+			if (recursionDepth < 5 && raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
+			{
+				return attenuation * CalculatePixelColour(scatteredRay, recursionDepth + 1);
+			}
 		}
 		else
 		{
@@ -201,7 +206,7 @@ protected:
 	}
 
 	// shade
-	inline void Shade(const Geom3D::RaycastHit& raycastHit, glm::vec4& colour)
+	inline void Shade(const Geom3D::RaycastHit& raycastHit, int recursionDepth, glm::vec4& colour)
 	{
 		// temporal shading: gradient according to the normal 
 		const glm::vec3& normal = raycastHit.hitNormal;
@@ -209,12 +214,12 @@ protected:
 	}
 
 	// get background colour
-	inline glm::vec4 GetBackgroundColour(const Geom3D::Ray& ray)
+	inline glm::vec3 GetBackgroundColour(const Geom3D::Ray& ray)
 	{
 		// blend from white to blue
 		glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
 		float t = 0.5f*(rayDirNormalized.y + 1.0f);
-		return (glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec4(0.5f, 0.7f, 1.0f, 1.0f)*t);
+		return (glm::vec3(1.0f, 1.0f, 1.0f)*(1.0f - t)) + (glm::vec3(0.5f, 0.7f, 1.0f)*t);
 	}
 
 	// set pixel colour

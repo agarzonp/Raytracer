@@ -15,7 +15,7 @@ public:
   ~MaterialDiffuse() {};
 
   // scatter ray
-  bool ScatterRay(const Geom3D::RaycastHit& hitInfo, glm::vec3& attenuationOut, Geom3D::Ray& rayOut) override
+  bool ScatterRay(const Geom3D::RaycastHit& hitInfo, glm::vec3& attenuationOut, Geom3D::Ray& rayOut) const override
   {
     glm::vec3 offset(0.0f, 0.0f, 0.0f); // TO-DO: add some random offset between [-1.0f, 1.0f] in the unit sphere
     glm::vec3 target = hitInfo.hitPos + hitInfo.hitNormal + offset;
