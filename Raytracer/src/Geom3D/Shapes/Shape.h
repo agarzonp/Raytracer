@@ -25,7 +25,7 @@ namespace Geom3D
 
 		virtual ~Shape() {};
 
-		virtual bool Raycast(const Ray& ray, RaycastHit& raycastHit) = 0;
+		virtual bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) = 0;
 
 	protected:
 

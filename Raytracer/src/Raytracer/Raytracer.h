@@ -171,7 +171,7 @@ protected:
 
 		// raycast
 		Geom3D::RaycastHit raycastHit;
-		if (Raycast(ray, raycastHit))
+		if (Raycast(ray, recursionDepth > 0 ? 0.001f: 0.0f, FLT_MAX, raycastHit))
 		{
 			// recursively scatter the ray
 			glm::vec3 attenuation;
@@ -190,12 +190,12 @@ protected:
 	}
 
 	// raycast
-	inline bool Raycast(const Geom3D::Ray& ray, Geom3D::RaycastHit& raycastHit)
+	inline bool Raycast(const Geom3D::Ray& ray, float minDistance, float maxDistance, Geom3D::RaycastHit& raycastHit)
 	{
-    static MaterialDiffuse diffuse(glm::vec3(0.7f, 0.3f, 0.4f));
+    static MaterialDiffuse diffuse(glm::vec3(0.8f, 0.3f, 0.4f));
 
 		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f, &diffuse);
-		bool raycast = sphere.Raycast(ray, raycastHit);
+		bool raycast = sphere.Raycast(ray, minDistance, maxDistance, raycastHit);
 		
     if (raycast)
     {
@@ -203,14 +203,6 @@ protected:
     }
    
 		return raycast;
-	}
-
-	// shade
-	inline void Shade(const Geom3D::RaycastHit& raycastHit, int recursionDepth, glm::vec4& colour)
-	{
-		// temporal shading: gradient according to the normal 
-		const glm::vec3& normal = raycastHit.hitNormal;
-		colour = glm::vec4(normal.x + 1.0f, normal.y + 1.0f, normal.z + 1.0f, 2.0f) * 0.5f;
 	}
 
 	// get background colour

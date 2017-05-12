@@ -50,7 +50,7 @@ namespace Geom3D
     const Material* GetMaterial() const { return material; }
 
 		// Raycast
-		bool Raycast(const Ray& ray, RaycastHit& raycastHit) override
+		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) override
 		{
 			glm::vec3 cc = ray.Origin() - c;
 			float a = glm::dot(ray.Direction(), ray.Direction());
@@ -66,11 +66,14 @@ namespace Geom3D
 
 				float t = std::min(t1, t2);
 
-				raycastHit.hitPos = ray.PointAtT(t);
-				raycastHit.hitNormal = glm::normalize(ray.Direction());
-        raycastHit.hitMaterial = material;
+				if (t >= minDistance && t <= maxDistance)
+				{
+					raycastHit.hitPos = ray.PointAtT(t);
+					raycastHit.hitNormal = glm::normalize(ray.Direction());
+					raycastHit.hitMaterial = material;
 
-				return true;
+					return true;
+				}
 			}
 
 			return false;
