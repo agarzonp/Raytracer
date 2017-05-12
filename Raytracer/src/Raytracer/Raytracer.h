@@ -31,6 +31,7 @@ struct RaytracerConfiguration
 	int width = -1;
 	int height = -1;
   int antialiasingSamples = 1;
+	int recursionDepth = 1;
 	float* buffer = nullptr;
 };
 
@@ -42,6 +43,9 @@ class Raytracer
 
   // antialiasing samples
   int antialiasingSamples = 1;
+
+	// max recursion
+	int maxRecursion = 1;
 
 	// pixels buffer
 	float* buffer = nullptr;
@@ -71,6 +75,7 @@ public:
 		width = config.width;
 		height = config.height;
     antialiasingSamples = config.antialiasingSamples;
+		maxRecursion = config.recursionDepth;
 		buffer = config.buffer;
 	}
 
@@ -165,32 +170,26 @@ protected:
   }
 
 	// calculate pixel colour
-	inline glm::vec3 CalculatePixelColour(const Geom3D::Ray& ray, int recursionDepth)
+	glm::vec3 CalculatePixelColour(const Geom3D::Ray& ray, int recursionDepth)
 	{
-		glm::vec3 colour;
-
 		// raycast
 		Geom3D::RaycastHit raycastHit;
-		if (Raycast(ray, recursionDepth > 0 ? 0.001f: 0.0f, FLT_MAX, raycastHit))
+		if (recursionDepth < maxRecursion && Raycast(ray, recursionDepth > 0 ? 0.001f: 0.0f, FLT_MAX, raycastHit))
 		{
 			// recursively scatter the ray
 			glm::vec3 attenuation;
 			Geom3D::Ray scatteredRay;
-			if (recursionDepth < 5 && raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
+			if (raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
 			{
 				return attenuation * CalculatePixelColour(scatteredRay, recursionDepth + 1);
 			}
 		}
-		else
-		{
-			colour = GetBackgroundColour(ray);
-		}
 
-		return colour;
+		return GetBackgroundColour(ray);
 	}
 
 	// raycast
-	inline bool Raycast(const Geom3D::Ray& ray, float minDistance, float maxDistance, Geom3D::RaycastHit& raycastHit)
+	bool Raycast(const Geom3D::Ray& ray, float minDistance, float maxDistance, Geom3D::RaycastHit& raycastHit)
 	{
     static MaterialDiffuse diffuse(glm::vec3(0.8f, 0.3f, 0.4f));
 
@@ -206,7 +205,7 @@ protected:
 	}
 
 	// get background colour
-	inline glm::vec3 GetBackgroundColour(const Geom3D::Ray& ray)
+	glm::vec3 GetBackgroundColour(const Geom3D::Ray& ray)
 	{
 		// blend from white to blue
 		glm::vec3 rayDirNormalized = glm::normalize(ray.Direction());
