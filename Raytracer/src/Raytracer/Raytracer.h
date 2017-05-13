@@ -60,6 +60,9 @@ class Raytracer
 	// threadpool
 	ThreadPool threadPool;
 
+	// camera
+	Camera camera;
+
 public:
 	
 	// Singleton instance
@@ -69,14 +72,16 @@ public:
 		return instance;
 	}
 
-	// set configuration
-	void SetConfiguration(const RaytracerConfiguration& config)
+	// init
+	void Init(const RaytracerConfiguration& config)
 	{
 		width = config.width;
 		height = config.height;
     antialiasingSamples = config.antialiasingSamples;
 		maxRecursion = config.recursionDepth;
 		buffer = config.buffer;
+
+		InitCamera();
 	}
 
 
@@ -110,9 +115,6 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
-    // camera
-    Camera camera(width, height);
-
 		for (int y = height - 1; y >= 0; y--)
 		{
 			for (int x = 0; x < width; x++)
@@ -193,7 +195,7 @@ protected:
 	{
     static MaterialDiffuse diffuse(glm::vec3(0.8f, 0.3f, 0.4f));
 
-		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -4.0f), 3.0f, &diffuse);
+		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -8.0f), 3.0f, &diffuse);
 		bool raycast = sphere.Raycast(ray, minDistance, maxDistance, raycastHit);
 		
     if (raycast)
@@ -226,6 +228,15 @@ protected:
 
 private:
 	
+	// init camera
+	void InitCamera()
+	{
+		// camera
+		float aspect = float(width) / float(height);
+		float verticalFieldOfView = 90.0f;
+		camera.Init(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), verticalFieldOfView, aspect);
+	}
+
 	// on rendering ended
 	void OnRenderingEnded(bool cancelled)
 	{

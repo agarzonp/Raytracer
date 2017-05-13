@@ -60,7 +60,7 @@ public:
     raytracerConfig.antialiasingSamples = antialiasingSamples;
 		raytracerConfig.recursionDepth = recursionDepth;
 		raytracerConfig.buffer = pixelsBuffer;
-		Raytracer::Get().SetConfiguration(raytracerConfig);
+		Raytracer::Get().Init(raytracerConfig);
 
 		return true;
 	}
