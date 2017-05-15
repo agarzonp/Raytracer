@@ -70,7 +70,7 @@ namespace Geom3D
 				{
 					raycastHit.hitDistance = t;
 					raycastHit.hitPos = ray.PointAtT(t);
-					raycastHit.hitNormal = glm::normalize(ray.Direction());
+					raycastHit.hitNormal = glm::normalize(raycastHit.hitPos - c);
 					raycastHit.hitMaterial = material.get();
 
 					return true;
