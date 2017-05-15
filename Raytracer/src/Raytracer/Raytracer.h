@@ -180,14 +180,18 @@ protected:
 	{
 		// raycast
 		Geom3D::RaycastHit raycastHit;
-		if (recursionDepth < maxRecursion && Raycast(ray, recursionDepth > 0 ? 0.001f: 0.0f, FLT_MAX, raycastHit))
+		if (Raycast(ray, recursionDepth > 0 ? 0.001f: 0.0f, FLT_MAX, raycastHit))
 		{
 			// recursively scatter the ray
 			glm::vec3 attenuation;
 			Geom3D::Ray scatteredRay;
-			if (raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
+			if (recursionDepth < maxRecursion && raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
 			{
 				return attenuation * CalculatePixelColour(scatteredRay, recursionDepth + 1);
+			}
+			else
+			{
+				return glm::vec3(0.0f, 0.0f, 0.0f);
 			}
 		}
 
@@ -233,9 +237,9 @@ private:
 	{
 		InitCamera();
 
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -8.5f), 3.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(5.0f, 0.0f, -6.0f), 1.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.4f, 0.6f, 0.2f))));
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -96.0f, 0.0f), 90.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.5f, 0.5f, 0.5f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(5.0f, 0.0f, -6.0f), 0.3f, std::make_shared<MaterialDiffuse>(glm::vec3(0.4f, 0.6f, 0.2f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.8f, 0.8f))));
 	}
 
 	// init camera
@@ -244,7 +248,7 @@ private:
 		// camera
 		float aspect = float(width) / float(height);
 		float verticalFieldOfView = 90.0f;
-		camera.Init(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), verticalFieldOfView, aspect);
+		camera.Init(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -0.1f), verticalFieldOfView, aspect);
 	}
 
 	// on rendering ended
