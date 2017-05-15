@@ -8,6 +8,7 @@
 #include "../ThreadPool/ThreadPool.h"
 
 #include "../Geom3D/Geom3D.h"
+#include "../World/World.h"
 
 #include "Camera/Camera.h"
 #include "Materials/Materials.h"
@@ -63,6 +64,9 @@ class Raytracer
 	// camera
 	Camera camera;
 
+	// world
+	World world;
+
 public:
 	
 	// Singleton instance
@@ -81,7 +85,7 @@ public:
 		maxRecursion = config.recursionDepth;
 		buffer = config.buffer;
 
-		InitCamera();
+		InitScene();
 	}
 
 
@@ -193,11 +197,7 @@ protected:
 	// raycast
 	bool Raycast(const Geom3D::Ray& ray, float minDistance, float maxDistance, Geom3D::RaycastHit& raycastHit)
 	{
-    static MaterialDiffuse diffuse(glm::vec3(0.8f, 0.3f, 0.4f));
-
-		Geom3D::Sphere sphere(glm::vec3(0.0f, 0.0f, -8.0f), 3.0f, &diffuse);
-		bool raycast = sphere.Raycast(ray, minDistance, maxDistance, raycastHit);
-		
+		bool raycast = world.Raycast(ray, minDistance, maxDistance, raycastHit);
     if (raycast)
     {
       raycastHit.ray = ray;
@@ -228,6 +228,16 @@ protected:
 
 private:
 	
+	// init scene
+	void InitScene()
+	{
+		InitCamera();
+
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -8.5f), 3.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(5.0f, 0.0f, -6.0f), 1.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.4f, 0.6f, 0.2f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -96.0f, 0.0f), 90.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.5f, 0.5f, 0.5f))));
+	}
+
 	// init camera
 	void InitCamera()
 	{

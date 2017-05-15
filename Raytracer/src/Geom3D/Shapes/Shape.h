@@ -12,7 +12,8 @@ namespace Geom3D
   struct RaycastHit
   {
     Ray ray;
-   
+		
+		float hitDistance = FLT_MAX;
     glm::vec3 hitPos;
     glm::vec3 hitNormal;
 

@@ -148,6 +148,7 @@
     <ClInclude Include="src\ThreadPool\ThreadPool.h" />
     <ClInclude Include="src\ThreadPool\ThreadTask.h" />
     <ClInclude Include="src\ThreadPool\ThreadTaskResult.h" />
+    <ClInclude Include="src\World\World.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -3,6 +3,8 @@
 
 #include "Shape.h"
 
+#include <memory>
+
 class Material;
 
 namespace Geom3D
@@ -14,24 +16,22 @@ namespace Geom3D
 		float r;
 
     // attached material
-    const Material* material;
+    std::shared_ptr<Material> material;
 
 	public:
 		Sphere() 
 		: c(glm::vec3(0.0f, 0.0f, 0.0f))
 		, r(1.0f)
-    , material(nullptr)
 		{
 		};
 
 		Sphere(const glm::vec3& center, float radius)
 			: c(center)
 			, r(radius)
-      , material(nullptr)
 		{
 		};
 
-    Sphere(const glm::vec3& center, float radius, const Material* material_)
+    Sphere(const glm::vec3& center, float radius, const std::shared_ptr<Material>& material_)
       : c(center)
       , r(radius)
       , material(material_)
@@ -47,7 +47,7 @@ namespace Geom3D
 		glm::vec3& Center() { return c; }
 		float& Radius() { return r; }
 
-    const Material* GetMaterial() const { return material; }
+		const std::shared_ptr<Material>& GetMaterial() const { return material; }
 
 		// Raycast
 		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) override
@@ -68,9 +68,10 @@ namespace Geom3D
 
 				if (t >= minDistance && t <= maxDistance)
 				{
+					raycastHit.hitDistance = t;
 					raycastHit.hitPos = ray.PointAtT(t);
 					raycastHit.hitNormal = glm::normalize(ray.Direction());
-					raycastHit.hitMaterial = material;
+					raycastHit.hitMaterial = material.get();
 
 					return true;
 				}

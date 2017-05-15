@@ -40,6 +40,9 @@
     <Filter Include="Source Files\Materials">
       <UniqueIdentifier>{8707112f-8b26-4eef-8c93-a9b67e891dd1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\World">
+      <UniqueIdentifier>{64895f71-2f36-430d-9e3a-1a851ec2974a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp">
@@ -103,6 +106,9 @@
     </ClInclude>
     <ClInclude Include="src\Materials\MaterialDiffuse.h">
       <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\World\World.h">
+      <Filter>Source Files\World</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
