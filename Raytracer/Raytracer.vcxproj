@@ -137,6 +137,7 @@
     <ClInclude Include="src\Input\Input.h" />
     <ClInclude Include="src\Materials\Material.h" />
     <ClInclude Include="src\Materials\MaterialDiffuse.h" />
+    <ClInclude Include="src\Materials\MaterialMetal.h" />
     <ClInclude Include="src\Materials\Materials.h" />
     <ClInclude Include="src\RaytracerApp.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachine.h" />

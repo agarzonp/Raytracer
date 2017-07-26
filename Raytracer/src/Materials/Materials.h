@@ -3,5 +3,6 @@
 
 #include "Material.h"
 #include "MaterialDiffuse.h"
+#include "MaterialMetal.h"
 
 #endif // !MATERIALS_H

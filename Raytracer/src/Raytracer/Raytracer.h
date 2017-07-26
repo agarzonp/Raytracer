@@ -238,7 +238,7 @@ private:
 		InitCamera();
 
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(5.0f, 0.0f, -6.0f), 0.3f, std::make_shared<MaterialDiffuse>(glm::vec3(0.4f, 0.6f, 0.2f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialMetal>(glm::vec3(0.8f, 0.6f, 0.2f))));
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.8f, 0.8f))));
 	}
 

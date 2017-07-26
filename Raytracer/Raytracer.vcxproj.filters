@@ -110,5 +110,8 @@
     <ClInclude Include="src\World\World.h">
       <Filter>Source Files\World</Filter>
     </ClInclude>
+    <ClInclude Include="src\Materials\MaterialMetal.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
