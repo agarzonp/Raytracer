@@ -33,6 +33,7 @@ struct RaytracerConfiguration
 	int height = -1;
   int antialiasingSamples = 1;
 	int recursionDepth = 1;
+	int numWorkingthreads = 1;
 	float* buffer = nullptr;
 };
 
@@ -60,6 +61,7 @@ class Raytracer
 
 	// threadpool
 	ThreadPool threadPool;
+	int numWorkingThreads = 1;
 
 	// camera
 	Camera camera;
@@ -83,6 +85,7 @@ public:
 		height = config.height;
     antialiasingSamples = config.antialiasingSamples;
 		maxRecursion = config.recursionDepth;
+		numWorkingThreads = config.numWorkingthreads;
 		buffer = config.buffer;
 
 		InitScene();
@@ -119,13 +122,55 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
-		for (int y = height - 1; y >= 0; y--)
+		if (numWorkingThreads > 1)
+		{
+			// Split rendering by adding as many render tasks as working threads
+			// Each thread will be responsible for doing a render chunk
+			std::vector<ThreadTaskResult> taskResults;
+
+			int heightInterval = height / numWorkingThreads;
+			for (int i = 0; i < numWorkingThreads; i++)
+			{
+				int startHeight = height - (i * heightInterval);
+				int endHeight = (i == numWorkingThreads - 1) ? 0 : startHeight - heightInterval;
+
+				auto task = std::bind(&Raytracer::RenderChunk, this, startHeight, endHeight);
+				auto taskResult = threadPool.AddTask(task);
+
+				taskResults.push_back(std::move(taskResult));
+			}
+
+			// make current thread to wait until all render tasks has been completed
+			void* result = nullptr;
+			for (size_t i = 0; i < taskResults.size(); i++)
+			{
+				taskResults[i].WaitForResult(result);
+			}
+		}
+		else
+		{
+			RenderChunk(height, 0);
+		}
+		
+		// notify render ended
+		bool cancelled = (state == RaytracerState::RENDERING_CANCELLED);
+		OnRenderingEnded(cancelled);
+	}
+
+protected:
+	Raytracer() : state(RaytracerState::IDLE) {}
+	~Raytracer() {};
+
+	// internal render
+	void RenderChunk(int startHeight, int endHeight)
+	{
+		for (int y = startHeight - 1; y >= endHeight; y--)
 		{
 			for (int x = 0; x < width; x++)
 			{
-        //calculate pixel colour
-        glm::vec4 pixelColour = CalculatePixelColour(x, y, camera);
-     
+				//calculate pixel colour
+				glm::vec4 pixelColour = CalculatePixelColour(x, y, camera);
+
 				// set pixel colour
 				SetPixelColour(x, y, pixelColour);
 
@@ -134,20 +179,11 @@ public:
 				{
 					// early exit if the rendering has been cancelled
 					// Warning: race condition allowed, at worst another iteration
-
-					OnRenderingEnded(true);
-					
 					return;
 				}
-			}		
+			}
 		}
-
-		OnRenderingEnded(false);
 	}
-
-protected:
-	Raytracer() : state(RaytracerState::IDLE) {}
-	~Raytracer() {};
 
   // calculate pixel colour
   inline glm::vec4 CalculatePixelColour(int x, int y, Camera& camera)

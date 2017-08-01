@@ -44,6 +44,7 @@ public:
 		title = "Raytracing";
     int antialiasingSamples = 20;
 		int recursionDepth = 5;
+		int numWorkingThreads = 5;
 
 		// init pixel buffer
 		unsigned numPixels = width * height;
@@ -59,6 +60,8 @@ public:
 		raytracerConfig.height = height;
     raytracerConfig.antialiasingSamples = antialiasingSamples;
 		raytracerConfig.recursionDepth = recursionDepth;
+		raytracerConfig.numWorkingthreads = numWorkingThreads;
+
 		raytracerConfig.buffer = pixelsBuffer;
 		Raytracer::Get().Init(raytracerConfig);
 
