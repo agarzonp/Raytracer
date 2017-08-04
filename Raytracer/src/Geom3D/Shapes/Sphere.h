@@ -19,16 +19,20 @@ namespace Geom3D
     std::shared_ptr<Material> material;
 
 	public:
+
+    // constructors
 		Sphere() 
 		: center(glm::vec3(0.0f, 0.0f, 0.0f))
 		, radius(1.0f)
 		{
+      CalculateAABB();
 		};
 
 		Sphere(const glm::vec3& center_, float radius_)
 			: center(center_)
 			, radius(radius_)
 		{
+      CalculateAABB();
 		};
 
     Sphere(const glm::vec3& center_, float radius_, const std::shared_ptr<Material>& material_)
@@ -36,9 +40,8 @@ namespace Geom3D
       , radius(radius_)
       , material(material_)
     {
+      CalculateAABB();
     };
-
-		~Sphere() {};
 
 		// getters and setter
 		const glm::vec3& Center() const { return center; }
@@ -49,8 +52,17 @@ namespace Geom3D
 
 		const std::shared_ptr<Material>& GetMaterial() const { return material; }
 
+    // calculate AABB
+    void CalculateAABB()
+    {
+      glm::vec3 p(radius, radius, radius);
+
+      aabb.Min() = center - p;
+      aabb.Min() = center + p;
+    }
+
 		// Raycast
-		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) override
+		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) const override
 		{
 			glm::vec3 cc = ray.Origin() - center;
 			float a = glm::dot(ray.Direction(), ray.Direction());
@@ -79,8 +91,6 @@ namespace Geom3D
 
 			return false;
 		}
-
-	private:
 
 	};
 }

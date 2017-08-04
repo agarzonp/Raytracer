@@ -4,6 +4,7 @@
 #include "glm/vec3.hpp"
 
 #include "../Ray.h"
+#include "../AABB.h"
 
 class Material;
 
@@ -22,17 +23,23 @@ namespace Geom3D
 
 	class Shape
 	{
+  protected:
+
+    // AABB
+    AABB aabb;
+
 	public:
 
 		virtual ~Shape() {};
 
-		virtual bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) = 0;
+    // getters 
+    const AABB& GetAABB() const { return aabb; }
 
-	protected:
+    // Calculate AABB
+    virtual void CalculateAABB() = 0;
 
-		Shape() {};
-		
-	private:
+    // Raycast
+		virtual bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) const = 0;
 
 	};
 }
