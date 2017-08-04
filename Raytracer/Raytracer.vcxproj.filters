@@ -113,5 +113,8 @@
     <ClInclude Include="src\Materials\MaterialMetal.h">
       <Filter>Source Files\Materials</Filter>
     </ClInclude>
+    <ClInclude Include="src\Geom3D\AABB.h">
+      <Filter>Source Files\Geom3D</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
