@@ -2,13 +2,20 @@
 #define	WORLD_H
 
 #include <memory>
-#include <list>
+#include <vector>
 #include "../Geom3D/Geom3D.h"
+#include "../Raytracer/BVH.h"
 
 class World
 {
 	// shapes
-	std::list<std::shared_ptr<Geom3D::Shape>> shapes;
+	std::vector<std::shared_ptr<Geom3D::Shape>> shapes;
+
+	// bounding volume hierarchy
+	BVH bvh;
+	
+	// flag to use the BVH for raycasting
+	bool useBVH = false;
 
 public:
 	World() {};
@@ -21,21 +28,36 @@ public:
 		return shapes.back();
 	}
 
+	// build BVH
+	void BuildBVH()
+	{
+		bvh = BVH(shapes);
+		useBVH = true;
+	}
+
 	// raycast
 	bool Raycast(const Geom3D::Ray& ray, float minDistance, float maxDistance, Geom3D::RaycastHit& raycastHit)
 	{
 		Geom3D::RaycastHit tempHit;
 		bool hit = false;
 
-		for (auto& shape : shapes)
+		if (useBVH)
 		{
-			if (shape->Raycast(ray, minDistance, maxDistance, tempHit) && tempHit.hitDistance < raycastHit.hitDistance)
+			hit = bvh.Raycast(ray, minDistance, maxDistance, raycastHit);
+		}
+		else
+		{
+			// brute force
+			for (auto& shape : shapes)
 			{
-				raycastHit = tempHit;
-				hit = true;
+				if (shape->Raycast(ray, minDistance, maxDistance, tempHit) && tempHit.hitDistance < raycastHit.hitDistance)
+				{
+					raycastHit = tempHit;
+					hit = true;
+				}
 			}
 		}
-
+		
 		return hit;
 	}
 

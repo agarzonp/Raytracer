@@ -45,6 +45,7 @@ public:
     int antialiasingSamples = 20;
 		int recursionDepth = 5;
 		int numWorkingThreads = 5;
+		bool useBVH = true;
 
 		// init pixel buffer
 		unsigned numPixels = width * height;
@@ -61,6 +62,7 @@ public:
     raytracerConfig.antialiasingSamples = antialiasingSamples;
 		raytracerConfig.recursionDepth = recursionDepth;
 		raytracerConfig.numWorkingthreads = numWorkingThreads;
+		raytracerConfig.useBVH = useBVH;
 
 		raytracerConfig.buffer = pixelsBuffer;
 		Raytracer::Get().Init(raytracerConfig);

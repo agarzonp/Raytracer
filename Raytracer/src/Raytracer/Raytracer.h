@@ -34,6 +34,7 @@ struct RaytracerConfiguration
   int antialiasingSamples = 1;
 	int recursionDepth = 1;
 	int numWorkingthreads = 1;
+	bool useBVH = false;
 	float* buffer = nullptr;
 };
 
@@ -48,6 +49,9 @@ class Raytracer
 
 	// max recursion
 	int maxRecursion = 1;
+
+	// use Bounding Volume Hierarchy optimisation
+	bool useBVH = false;
 
 	// pixels buffer
 	float* buffer = nullptr;
@@ -86,6 +90,7 @@ public:
     antialiasingSamples = config.antialiasingSamples;
 		maxRecursion = config.recursionDepth;
 		numWorkingThreads = config.numWorkingthreads;
+		useBVH = config.useBVH;
 		buffer = config.buffer;
 
 		InitScene();
@@ -276,6 +281,12 @@ private:
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialMetal>(glm::vec3(0.8f, 0.6f, 0.2f))));
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.8f, 0.8f))));
+
+		if (useBVH)
+		{
+			world.BuildBVH();
+		}
+
 	}
 
 	// init camera

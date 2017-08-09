@@ -58,7 +58,7 @@ namespace Geom3D
       glm::vec3 p(radius, radius, radius);
 
       aabb.Min() = center - p;
-      aabb.Min() = center + p;
+      aabb.Max() = center + p;
     }
 
 		// Raycast
