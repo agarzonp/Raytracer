@@ -3,7 +3,9 @@
 
 #include <string>
 
+#include "CSVParser/CSVParser.h"
 #include "Input/Input.h"
+
 #include "Raytracer/Raytracer.h"
 #include "RaytracerAppMachine/RaytracerAppMachine.h"
 
@@ -38,14 +40,20 @@ public:
 	// init
 	bool Init()
 	{
-		// TO-DO: read a configuration file and set the properties
-		width = 800;
-		height = 600;
+		// read raytracer configuration from a file the properties
+		agarzonp::CSVParser parser("config/config1.csv");
+		if (!parser.IsValid())
+		{
+			return false;
+		}
+
+		width = std::stoi(parser[0][1]);
+		height = std::stoi(parser[1][1]);
 		title = "Raytracing";
-    int antialiasingSamples = 20;
-		int recursionDepth = 5;
-		int numWorkingThreads = 5;
-		bool useBVH = true;
+    int antialiasingSamples = std::stoi(parser[2][1]);
+		int recursionDepth = std::stoi(parser[3][1]);
+		int numWorkingThreads = std::stoi(parser[4][1]);
+		bool useBVH = std::stoi(parser[5][1]) > 0;
 
 		// init pixel buffer
 		unsigned numPixels = width * height;
@@ -55,7 +63,7 @@ public:
 		state = ERaytracerAppState::RENDER;
 		raytracerAppMachine.Init(state);
 
-		// init raitracer
+		// init raytracer
 		RaytracerConfiguration raytracerConfig;
 		raytracerConfig.width = width;
 		raytracerConfig.height = height;

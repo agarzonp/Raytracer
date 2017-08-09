@@ -1,0 +1,6 @@
+width,800
+height,600
+antialiasing samples,20
+recursion depth,5
+num working threads,5
+use BVH optimisation,1
