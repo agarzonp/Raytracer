@@ -116,5 +116,8 @@
     <ClInclude Include="src\Geom3D\AABB.h">
       <Filter>Source Files\Geom3D</Filter>
     </ClInclude>
+    <ClInclude Include="src\Raytracer\BVH.h">
+      <Filter>Source Files\Raytracer</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

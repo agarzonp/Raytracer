@@ -26,7 +26,7 @@ namespace Geom3D
     const glm::vec3& Max() const { return max; }
 
     // Intersect
-    bool Intersect(const Ray& ray, float& tMin, float& tMax)
+    bool Intersect(const Ray& ray, float& tMin, float& tMax) const
     {
       // calculate minimum and maximum t on axis X
       float txMin = (min.x - ray.Origin().x) / ray.Direction().x;

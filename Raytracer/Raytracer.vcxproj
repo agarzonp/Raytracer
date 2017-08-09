@@ -146,6 +146,7 @@
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppState.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateRender.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateSelectScene.h" />
+    <ClInclude Include="src\Raytracer\BVH.h" />
     <ClInclude Include="src\Raytracer\Raytracer.h" />
     <ClInclude Include="src\ThreadPool\ThreadPool.h" />
     <ClInclude Include="src\ThreadPool\ThreadTask.h" />
