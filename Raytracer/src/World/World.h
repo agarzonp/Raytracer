@@ -17,6 +17,12 @@ class World
 	// flag to use the BVH for raycasting
 	bool useBVH = false;
 
+#if PROFILE_HIT_TEST
+	// tracks the number of hit test done
+	std::atomic<uint64_t> hitTestCount = 0;
+#endif // PROFILE_HIT_TEST
+
+
 public:
 	World() {};
 	~World() {};
@@ -31,7 +37,7 @@ public:
 	// build BVH
 	void BuildBVH()
 	{
-		bvh = BVH(shapes);
+		bvh.Build(shapes);
 		useBVH = true;
 	}
 
@@ -55,11 +61,36 @@ public:
 					raycastHit = tempHit;
 					hit = true;
 				}
+
+				#if PROFILE_HIT_TEST
+				hitTestCount++;
+				#endif
 			}
 		}
 		
 		return hit;
 	}
+
+
+#if PROFILE_HIT_TEST
+	// Hit test count
+	void ResetHitTestCount()
+	{
+		hitTestCount = 0;
+
+		if (useBVH)
+		{
+			bvh.ResetHitTestCount();
+		}
+
+	}
+	uint64_t GetHitTestCount() 
+	{ 
+		return  useBVH ? bvh.GetHitTestCount() : hitTestCount; 
+	}
+#endif
+
+	
 
 private:
 

@@ -62,7 +62,7 @@ namespace Geom3D
     }
 
 		// Raycast
-		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) const override
+		bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) override
 		{
 			glm::vec3 cc = ray.Origin() - center;
 			float a = glm::dot(ray.Direction(), ray.Direction());

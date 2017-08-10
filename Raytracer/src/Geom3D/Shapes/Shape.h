@@ -39,7 +39,7 @@ namespace Geom3D
     virtual void CalculateAABB() = 0;
 
     // Raycast
-		virtual bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) const = 0;
+		virtual bool Raycast(const Ray& ray, float minDistance, float maxDistance, RaycastHit& raycastHit) = 0;
 
 	};
 }

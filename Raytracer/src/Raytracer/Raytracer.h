@@ -8,10 +8,12 @@
 #include "../ThreadPool/ThreadPool.h"
 
 #include "../Geom3D/Geom3D.h"
-#include "../World/World.h"
 
 #include "Camera/Camera.h"
 #include "Materials/Materials.h"
+
+#define PROFILE_HIT_TEST 0
+#include "../World/World.h"
 
 typedef std::chrono::time_point<std::chrono::system_clock> TimePoint;
 
@@ -22,7 +24,7 @@ std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
 std::uniform_real_distribution<float> spherePositionXDistribution(-2.0f, 2.0f);
 std::uniform_real_distribution<float> spherePositionYDistribution(-1.0f, 0.0f);
-std::uniform_real_distribution<float> spherePositionZDistribution(5.0f, -10.0f);
+std::uniform_real_distribution<float> spherePositionZDistribution(-10.0f, 5.0f);
 std::uniform_real_distribution<float> sphereRadiusDistribution(0.01f, 0.1f);
 std::uniform_real_distribution<float> materialAttenuationDistribution(0.0f, 1.0f);
 std::uniform_int_distribution<int>  materialTypeDistribution(0, 4);
@@ -111,6 +113,10 @@ public:
 		if (state == RaytracerState::IDLE)
 		{
 			state = RaytracerState::RENDERING;
+
+			#if PROFILE_HIT_TEST
+			world.ResetHitTestCount();
+			#endif		
 
 			// submit render task to the threadPool so we do the rendering in a different thread
 			auto task = std::bind(&Raytracer::Render, this);
@@ -336,6 +342,10 @@ private:
 		// output render ended status and time
 		renderTimeStr = GetTimeStr(renderStart, std::chrono::system_clock::now());
 		printf("Rendering %s!. Render took: %s\n", cancelled ? "CANCELLED" : "DONE", renderTimeStr.c_str());
+
+#if PROFILE_HIT_TEST
+		printf("Hit test count: %llu\n", world.GetHitTestCount());
+#endif
 
 		// back to idle
 		state = RaytracerState::IDLE;
