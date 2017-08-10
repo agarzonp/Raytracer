@@ -54,6 +54,7 @@ public:
 		int recursionDepth = std::stoi(parser[3][1]);
 		int numWorkingThreads = std::stoi(parser[4][1]);
 		bool useBVH = std::stoi(parser[5][1]) > 0;
+		int randomShapes = std::stoi(parser[6][1]);
 
 		// init pixel buffer
 		unsigned numPixels = width * height;
@@ -71,6 +72,7 @@ public:
 		raytracerConfig.recursionDepth = recursionDepth;
 		raytracerConfig.numWorkingthreads = numWorkingThreads;
 		raytracerConfig.useBVH = useBVH;
+		raytracerConfig.randomShapes = randomShapes;
 
 		raytracerConfig.buffer = pixelsBuffer;
 		Raytracer::Get().Init(raytracerConfig);

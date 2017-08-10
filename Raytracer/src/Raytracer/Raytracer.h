@@ -20,6 +20,13 @@ std::random_device randomDevice;
 std::mt19937 randomEngine(randomDevice());
 std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
 
+std::uniform_real_distribution<float> spherePositionXDistribution(-2.0f, 2.0f);
+std::uniform_real_distribution<float> spherePositionYDistribution(-1.0f, 0.0f);
+std::uniform_real_distribution<float> spherePositionZDistribution(5.0f, -10.0f);
+std::uniform_real_distribution<float> sphereRadiusDistribution(0.01f, 0.1f);
+std::uniform_real_distribution<float> materialAttenuationDistribution(0.0f, 1.0f);
+std::uniform_int_distribution<int>  materialTypeDistribution(0, 4);
+
 enum class RaytracerState
 {
 	IDLE,
@@ -35,6 +42,7 @@ struct RaytracerConfiguration
 	int recursionDepth = 1;
 	int numWorkingthreads = 1;
 	bool useBVH = false;
+	int randomShapes = 0;
 	float* buffer = nullptr;
 };
 
@@ -93,7 +101,7 @@ public:
 		useBVH = config.useBVH;
 		buffer = config.buffer;
 
-		InitScene();
+		InitScene(config);
 	}
 
 
@@ -274,19 +282,43 @@ protected:
 private:
 	
 	// init scene
-	void InitScene()
+	void InitScene(const RaytracerConfiguration& config)
 	{
 		InitCamera();
 
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(1.0f, 0.0f, -1.0f), 0.5f, std::make_shared<MaterialMetal>(glm::vec3(0.8f, 0.6f, 0.2f))));
+		// two big spheres
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(-0.5f, 0.0f, -1.3f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
+		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.7f, 0.0f, -3.0f), 0.5f, std::make_shared<MaterialMetal>(glm::vec3(0.8f, 0.6f, 0.2f))));
+		
+		// floor 
 		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.8f, 0.8f))));
+		
+		CreateRandomScene(config.randomShapes);
 
 		if (useBVH)
 		{
 			world.BuildBVH();
 		}
+	}
 
+	void CreateRandomScene(int randomShapes)
+	{
+		// random shapes
+		for (int i = 0; i < randomShapes; i++)
+		{
+			// random material
+			glm::vec3 attenuation(materialAttenuationDistribution(randomEngine), materialAttenuationDistribution(randomEngine), materialAttenuationDistribution(randomEngine));
+
+			std::shared_ptr<Material> material;
+			bool diffuseMaterial = materialTypeDistribution(randomEngine) > 0;
+			diffuseMaterial	? material = std::make_shared<MaterialDiffuse>(attenuation) : material = std::make_shared<MaterialMetal>(attenuation);
+
+			// random sphere
+			glm::vec3 spherePos(spherePositionXDistribution(randomEngine), spherePositionYDistribution(randomEngine), spherePositionZDistribution(randomEngine));
+			float sphereRadius = sphereRadiusDistribution(randomEngine);
+
+			world.AddShape(std::make_shared<Geom3D::Sphere>(spherePos, sphereRadius, material));
+		}
 	}
 
 	// init camera
