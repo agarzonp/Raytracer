@@ -24,6 +24,9 @@ public:
 	// build
 	void Build(std::vector<std::shared_ptr<Geom3D::Shape>>& shapes)
 	{
+		// order shapes
+		std::sort(shapes.begin(), shapes.end(), BVH::SortFunc);
+
 		// Recursively Build BVH
 		RecursivelyBuildBVH(shapes);
 	}
@@ -195,6 +198,12 @@ private:
 			break;
 		}
 		}
+	}
+
+	// Shapes Sort function according to AABB min position in X
+	static bool SortFunc(std::shared_ptr<Geom3D::Shape>& shapeA, std::shared_ptr<Geom3D::Shape>& shapeB)
+	{
+		return shapeA->GetAABB().Min().x < shapeB->GetAABB().Min().x;
 	}
 
 };
