@@ -12,17 +12,13 @@ class RaytracerAppMachine
 	std::unique_ptr<RaytracerAppState> currentState;
 
 public:
-	RaytracerAppMachine() {};
-	~RaytracerAppMachine() {};
 
-	// get current state
-	std::unique_ptr<RaytracerAppState> & GetCurrentState() { return currentState; }
-
-	// init
-	void Init(ERaytracerAppState state)
-	{
-		SetState(state);
-	}
+  // singleton instance
+  static RaytracerAppMachine& Get()
+  {
+    static RaytracerAppMachine instance;
+    return instance;
+  }
 
 	// set state
 	void SetState(ERaytracerAppState state)
@@ -48,6 +44,15 @@ public:
 		currentState->Init();
 	}
 
+  // on key pressed
+  void OnKeyPressed(int key)
+  {
+    if (currentState)
+    {
+      currentState->OnKeyPressed(key);
+    }
+  }
+
 	// update
 	void Update()
 	{
@@ -60,7 +65,10 @@ public:
 		currentState->Render();
 	}
 
-private:
+protected:
+
+  RaytracerAppMachine() {};
+
 
 };
 

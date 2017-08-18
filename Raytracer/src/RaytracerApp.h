@@ -18,10 +18,6 @@ class RaytracerApp : public InputListener
 	// window title
 	std::string title;
 
-	// current state and the state machine
-	ERaytracerAppState state;
-	RaytracerAppMachine raytracerAppMachine;
-
 	// pixelsBuffer
 	float* pixelsBuffer = nullptr;
 
@@ -40,61 +36,63 @@ public:
 	// init
 	bool Init()
 	{
-		// read raytracer configuration from a file the properties
-		agarzonp::CSVParser parser("config/config1.csv");
+    // read app configuration from a file
+    agarzonp::CSVParser appConfig("config/appConfig.csv");
+    if (!appConfig.IsValid())
+    {
+      return false;
+    }
+
+    width = std::stoi(appConfig[0][1]);
+    height = std::stoi(appConfig[1][1]);
+    title = appConfig[2][1];
+
+    // init pixel buffer
+    unsigned numPixels = width * height;
+    pixelsBuffer = new float[numPixels * 4]; // 4 -> RGBA
+
+		// read raytracer configuration from a file
+		agarzonp::CSVParser parser("config/raytracer/config1.csv");
 		if (!parser.IsValid())
 		{
 			return false;
 		}
 
-		width = std::stoi(parser[0][1]);
-		height = std::stoi(parser[1][1]);
-		title = "Raytracing";
-    int antialiasingSamples = std::stoi(parser[2][1]);
-		int recursionDepth = std::stoi(parser[3][1]);
-		int numWorkingThreads = std::stoi(parser[4][1]);
-		bool useBVH = std::stoi(parser[5][1]) > 0;
-		int randomShapes = std::stoi(parser[6][1]);
-
-		// init pixel buffer
-		unsigned numPixels = width * height;
-		pixelsBuffer = new float[numPixels * 4]; // 4 -> RGBA
-
-		// init state machine
-		state = ERaytracerAppState::RENDER;
-		raytracerAppMachine.Init(state);
+    int antialiasingSamples = std::stoi(parser[0][1]);
+		int recursionDepth = std::stoi(parser[1][1]);
+		int numWorkingThreads = std::stoi(parser[2][1]);
+		bool useBVH = std::stoi(parser[3][1]) > 0;
+		int randomShapes = std::stoi(parser[4][1]);
 
 		// init raytracer
 		RaytracerConfiguration raytracerConfig;
 		raytracerConfig.width = width;
 		raytracerConfig.height = height;
+    raytracerConfig.buffer = pixelsBuffer;
     raytracerConfig.antialiasingSamplesCount = antialiasingSamples;
 		raytracerConfig.maxRecursionDepth = recursionDepth;
 		raytracerConfig.renderingSubtasksCount = numWorkingThreads;
 		raytracerConfig.useBVH = useBVH;
 		raytracerConfig.randomShapes = randomShapes;
-
-		raytracerConfig.buffer = pixelsBuffer;
+		
 		Raytracer::Get().Init(raytracerConfig);
 
+    // init state machine
+    RaytracerAppMachine::Get().SetState(ERaytracerAppState::RENDER);
 		return true;
 	}
 
 	// on key pressed
 	void OnKeyPressed(int key) override
 	{
-		auto& currentState = raytracerAppMachine.GetCurrentState();
-		if (currentState)
-		{
-			currentState->OnKeyPressed(key);
-		}
+    RaytracerAppMachine::Get().OnKeyPressed(key);
 	}
 
 	// mainloop
 	void MainLoop()
 	{
-		raytracerAppMachine.Update();
-		raytracerAppMachine.Render();
+    RaytracerAppMachine::Get().Update();
+    RaytracerAppMachine::Get().Render();
 
 		// draw current pixels buffer
 		glDrawPixels(width, height, GL_RGBA, GL_FLOAT, pixelsBuffer);
