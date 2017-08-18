@@ -3,8 +3,8 @@
 
 #include "Ray.h"
 #include "AABB.h"
-#include "Shapes/Shape.h"
-#include "Shapes/Sphere.h"
+#include "Shapes/Shapes.h"
+#include "Shapes/ShapeFactory.h"
 
 #endif // !GEOM_3D_H
 

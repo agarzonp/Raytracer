@@ -68,9 +68,9 @@ public:
 		RaytracerConfiguration raytracerConfig;
 		raytracerConfig.width = width;
 		raytracerConfig.height = height;
-    raytracerConfig.antialiasingSamples = antialiasingSamples;
-		raytracerConfig.recursionDepth = recursionDepth;
-		raytracerConfig.numWorkingthreads = numWorkingThreads;
+    raytracerConfig.antialiasingSamplesCount = antialiasingSamples;
+		raytracerConfig.maxRecursionDepth = recursionDepth;
+		raytracerConfig.renderingSubtasksCount = numWorkingThreads;
 		raytracerConfig.useBVH = useBVH;
 		raytracerConfig.randomShapes = randomShapes;
 

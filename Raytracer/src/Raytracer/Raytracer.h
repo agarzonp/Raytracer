@@ -10,7 +10,7 @@
 #include "../Geom3D/Geom3D.h"
 
 #include "Camera/Camera.h"
-#include "Materials/Materials.h"
+#include "Materials/MaterialFactory.h"
 
 #define PROFILE_HIT_TEST 0
 #include "../World/World.h"
@@ -40,12 +40,15 @@ struct RaytracerConfiguration
 {
 	int width = -1;
 	int height = -1;
-  int antialiasingSamples = 1;
-	int recursionDepth = 1;
-	int numWorkingthreads = 1;
+  float* buffer = nullptr;
+
+  int antialiasingSamplesCount = 1;
+	int maxRecursionDepth = 1;
+	int renderingSubtasksCount = 1;
 	bool useBVH = false;
-	int randomShapes = 0;
-	float* buffer = nullptr;
+	
+  int randomShapes = 0;
+  std::string sceneId;
 };
 
 class Raytracer
@@ -55,10 +58,10 @@ class Raytracer
 	int height = -1;
 
   // antialiasing samples
-  int antialiasingSamples = 1;
+  int antialiasingSamplesCount = 1;
 
-	// max recursion
-	int maxRecursion = 1;
+	// max recursion depth
+	int maxRecursionDepth = 1;
 
 	// use Bounding Volume Hierarchy optimisation
 	bool useBVH = false;
@@ -75,7 +78,7 @@ class Raytracer
 
 	// threadpool
 	ThreadPool threadPool;
-	int numWorkingThreads = 1;
+	int renderingSubtasksCount = 1;
 
 	// camera
 	Camera camera;
@@ -92,18 +95,27 @@ public:
 		return instance;
 	}
 
+  // setters
+  void SetAntialiasingSamplesCount(unsigned count) { antialiasingSamplesCount = count; }
+  void SetMaxRecursionDepth(unsigned depth) { maxRecursionDepth = depth; }
+  void SetRenderingSubtasksCount(unsigned count) { renderingSubtasksCount = count; }
+  void SetUseBVH(bool use) { useBVH = use; }
+
 	// init
 	void Init(const RaytracerConfiguration& config)
 	{
 		width = config.width;
 		height = config.height;
-    antialiasingSamples = config.antialiasingSamples;
-		maxRecursion = config.recursionDepth;
-		numWorkingThreads = config.numWorkingthreads;
-		useBVH = config.useBVH;
 		buffer = config.buffer;
 
-		InitScene(config);
+    SetAntialiasingSamplesCount(config.antialiasingSamplesCount);
+    SetMaxRecursionDepth(config.maxRecursionDepth);
+    SetRenderingSubtasksCount(config.renderingSubtasksCount);
+    SetUseBVH(config.useBVH);
+
+    InitCamera();
+
+		LoadScene(config);
 	}
 
 
@@ -141,17 +153,17 @@ public:
 
 		renderStart = std::chrono::system_clock::now();
 		
-		if (numWorkingThreads > 1)
+		if (renderingSubtasksCount > 1)
 		{
-			// Split rendering by adding as many render tasks as working threads
+			// Split rendering by adding as many render tasks as renderingSubtasksCount
 			// Each thread will be responsible for doing a render chunk
 			std::vector<ThreadTaskResult> taskResults;
 
-			int heightInterval = height / numWorkingThreads;
-			for (int i = 0; i < numWorkingThreads; i++)
+			int heightInterval = height / renderingSubtasksCount;
+			for (int i = 0; i < renderingSubtasksCount; i++)
 			{
 				int startHeight = height - (i * heightInterval);
-				int endHeight = (i == numWorkingThreads - 1) ? 0 : startHeight - heightInterval;
+				int endHeight = (i == renderingSubtasksCount - 1) ? 0 : startHeight - heightInterval;
 
 				auto task = std::bind(&Raytracer::RenderChunk, this, startHeight, endHeight);
 				auto taskResult = threadPool.AddTask(task);
@@ -210,7 +222,7 @@ protected:
     // Note: we send more than one ray per pixel (randomly offset) in order to do antialiasing
 
     glm::vec3 pixelColour(0.0f, 0.0f, 0.0f);
-    for (int sample = 0; sample < antialiasingSamples; sample++)
+    for (int sample = 0; sample < antialiasingSamplesCount; sample++)
     {
       // ray generation
       float xOffset = distribution(randomEngine);
@@ -225,7 +237,7 @@ protected:
 		}
 
     // avarage the colour
-    pixelColour /= float(antialiasingSamples);
+    pixelColour /= float(antialiasingSamplesCount);
 
     return glm::vec4(pixelColour, 1.0f);
   }
@@ -240,7 +252,7 @@ protected:
 			// recursively scatter the ray
 			glm::vec3 attenuation;
 			Geom3D::Ray scatteredRay;
-			if (recursionDepth < maxRecursion && raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
+			if (recursionDepth < maxRecursionDepth && raycastHit.hitMaterial->ScatterRay(raycastHit, attenuation, scatteredRay))
 			{
 				return attenuation * CalculatePixelColour(scatteredRay, recursionDepth + 1);
 			}
@@ -287,45 +299,81 @@ protected:
 
 private:
 	
-	// init scene
-	void InitScene(const RaytracerConfiguration& config)
+	// load scene
+	void LoadScene(const RaytracerConfiguration& config)
 	{
-		InitCamera();
+    // clear current world
+    world.Clear();
 
-		// two big spheres
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(-0.5f, 0.0f, -1.3f), 0.5f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.3f, 0.4f))));
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.7f, 0.0f, -3.0f), 0.5f, std::make_shared<MaterialMetal>(glm::vec3(0.8f, 0.6f, 0.2f))));
-		
-		// floor 
-		world.AddShape(std::make_shared<Geom3D::Sphere>(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, std::make_shared<MaterialDiffuse>(glm::vec3(0.8f, 0.8f, 0.8f))));
-		
-		CreateRandomScene(config.randomShapes);
+    // load the scene defined or a random one
+    config.sceneId.empty() ? CreateRandomScene(config.randomShapes) : LoadScene(config.sceneId);
 
+    // build BVH
 		if (useBVH)
 		{
 			world.BuildBVH();
 		}
 	}
 
+  void LoadScene(const std::string& sceneId)
+  {
+    // TO-DO
+
+    MaterialFactoryParams materialParams;
+    materialParams.materialType = "Diffuse";
+    materialParams.materialColour = glm::vec3(0.8f, 0.3f, 0.4f);
+    std::shared_ptr<Material> material = MaterialFactory::Create(materialParams);
+
+    Geom3D::ShapeFactoryParams shapeParams;
+    shapeParams.shapeType = "Sphere";
+    shapeParams.shapePos = glm::vec3(-0.5f, 0.0f, -1.3f);
+    shapeParams.radius = 0.5f;
+    shapeParams.material = material;
+    std::shared_ptr<Geom3D::Shape> shape = Geom3D::ShapeFactory::Create(shapeParams);
+    
+    world.AddShape(shape);
+  }
+
+  // create random scene
 	void CreateRandomScene(int randomShapes)
 	{
+    // two big spheres
+    world.AddShape(CreateSphere(glm::vec3(-0.5f, 0.0f, -1.3f), 0.5f, "Diffuse", glm::vec3(0.8f, 0.3f, 0.4f)));
+    world.AddShape(CreateSphere(glm::vec3(0.7f, 0.0f, -3.0f), 0.5f, "Metal", glm::vec3(0.8f, 0.6f, 0.2f)));
+
+    // floor 
+    world.AddShape(CreateSphere(glm::vec3(0.0f, -100.5f, -1.0f), 100.0f, "Diffuse", glm::vec3(0.8f, 0.8f, 0.8f)));
+
 		// random shapes
 		for (int i = 0; i < randomShapes; i++)
 		{
 			// random material
 			glm::vec3 attenuation(materialAttenuationDistribution(randomEngine), materialAttenuationDistribution(randomEngine), materialAttenuationDistribution(randomEngine));
-
-			std::shared_ptr<Material> material;
 			bool diffuseMaterial = materialTypeDistribution(randomEngine) > 0;
-			diffuseMaterial	? material = std::make_shared<MaterialDiffuse>(attenuation) : material = std::make_shared<MaterialMetal>(attenuation);
-
+			
 			// random sphere
 			glm::vec3 spherePos(spherePositionXDistribution(randomEngine), spherePositionYDistribution(randomEngine), spherePositionZDistribution(randomEngine));
 			float sphereRadius = sphereRadiusDistribution(randomEngine);
 
-			world.AddShape(std::make_shared<Geom3D::Sphere>(spherePos, sphereRadius, material));
+      world.AddShape(CreateSphere(spherePos, sphereRadius, diffuseMaterial ? "Diffuse" : "Metal", attenuation));
 		}
 	}
+
+  std::shared_ptr<Geom3D::Shape> CreateSphere(const glm::vec3& pos, float radius, const std::string& materialType, const glm::vec3& materialColour)
+  {
+    MaterialFactoryParams materialParams;
+    materialParams.materialType = materialType;
+    materialParams.materialColour = materialColour;
+    std::shared_ptr<Material> material = MaterialFactory::Create(materialParams);
+
+    Geom3D::ShapeFactoryParams shapeParams;
+    shapeParams.shapeType = "Sphere";
+    shapeParams.shapePos = pos;
+    shapeParams.radius = radius;
+    shapeParams.material = material;
+
+    return Geom3D::ShapeFactory::Create(shapeParams);
+  }
 
 	// init camera
 	void InitCamera()

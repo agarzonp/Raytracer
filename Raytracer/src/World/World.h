@@ -27,11 +27,22 @@ public:
 	World() {};
 	~World() {};
 
+  // clear
+  void Clear()
+  {
+    shapes.clear();
+  }
+
 	// add shape
 	std::shared_ptr<Geom3D::Shape> AddShape(std::shared_ptr<Geom3D::Shape> shape)
 	{
-		shapes.push_back(shape);
-		return shapes.back();
+    if (shape)
+    {
+      shapes.push_back(shape);
+      return shapes.back();
+    }
+		
+    return nullptr;
 	}
 
 	// build BVH
@@ -89,8 +100,6 @@ public:
 		return  useBVH ? bvh.GetHitTestCount() : hitTestCount; 
 	}
 #endif
-
-	
 
 private:
 

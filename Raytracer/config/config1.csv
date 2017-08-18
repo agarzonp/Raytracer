@@ -1,7 +1,7 @@
 width,800
 height,600
-antialiasing samples,20
-recursion depth,5
-num working threads,5
+antialiasing samples count,20
+max recursion depth,5
+rendering subtasks count,5
 use BVH optimisation,1
 random shapes,500

@@ -125,5 +125,14 @@
     <ClInclude Include="src\CSVParser\CSVParser.h">
       <Filter>Source Files\CSVParser</Filter>
     </ClInclude>
+    <ClInclude Include="src\Geom3D\Shapes\ShapeFactory.h">
+      <Filter>Source Files\Geom3D\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Materials\MaterialFactory.h">
+      <Filter>Source Files\Materials</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Geom3D\Shapes\Shapes.h">
+      <Filter>Source Files\Geom3D\Shapes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
