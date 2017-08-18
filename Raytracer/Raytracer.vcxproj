@@ -146,8 +146,10 @@
     <ClInclude Include="src\Materials\Materials.h" />
     <ClInclude Include="src\RaytracerApp.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachine.h" />
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachineInterface.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppState.h" />
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateConfigRaytracer.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateRender.h" />
     <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateSelectScene.h" />
     <ClInclude Include="src\Raytracer\BVH.h" />

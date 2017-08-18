@@ -6,10 +6,25 @@
 class RaytracerAppStateSelectScene : public RaytracerAppState
 {
 public:
-	RaytracerAppStateSelectScene() {};
+	RaytracerAppStateSelectScene(RaytracerAppMachineInterface* stateMachine)
+    : RaytracerAppState(stateMachine)
+  {
+  };
+
 	~RaytracerAppStateSelectScene() {};
 
-private:
+  // OnKeyPressed
+  void OnKeyPressed(int key) override
+  {
+    switch (key)
+    {
+    case GLFW_KEY_ESCAPE:
+      stateMachine->SetState(ERaytracerAppState::RENDER);
+      break;
+    case GLFW_KEY_C:
+      break;
+    }
+  }
 
 };
 

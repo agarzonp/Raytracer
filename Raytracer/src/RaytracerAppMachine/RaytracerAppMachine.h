@@ -1,13 +1,11 @@
 #ifndef RAYTRACER_APP_MACHINE_H
 #define RAYTRACER_APP_MACHINE_H
 
-#include <memory>
-
-#include "../Input/Input.h"
-
+#include "RaytracerAppMachineInterface.h"
 #include "RaytracerAppStates.h"
 
-class RaytracerAppMachine
+
+class RaytracerAppMachine : public RaytracerAppMachineInterface
 {
 	std::unique_ptr<RaytracerAppState> currentState;
 
@@ -21,7 +19,7 @@ public:
   }
 
 	// set state
-	void SetState(ERaytracerAppState state)
+	void SetState(ERaytracerAppState state) override
 	{
 		// stop current state before setting the new one
 		if (currentState)
@@ -32,11 +30,14 @@ public:
 		// set the new state
 		switch (state)
 		{
+    case ERaytracerAppState::CONFIG_RAYTRACER:
+      currentState.reset(new RaytracerAppStateConfigRaytracer(this));
+      break;
 		case ERaytracerAppState::SELECT_SCENE:
-			currentState.reset(new RaytracerAppStateSelectScene());
+			currentState.reset(new RaytracerAppStateSelectScene(this));
 			break;
 		case ERaytracerAppState::RENDER:
-			currentState.reset(new RaytracerAppStateRender());
+			currentState.reset(new RaytracerAppStateRender(this));
 			break;
 		}
 

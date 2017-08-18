@@ -1,11 +1,21 @@
 #ifndef RAYTRACER_APP_STATE
 #define RAYTRACER_APP_STATE
 
+#include "../RaytracerAppMachineInterface.h"
+
 class RaytracerAppState
 {
+protected:
+
+  RaytracerAppMachineInterface* stateMachine = nullptr;
+
 public:
-	RaytracerAppState() {};
-	~RaytracerAppState() {};
+	RaytracerAppState(RaytracerAppMachineInterface* stateMachineInterface) 
+    : stateMachine(stateMachineInterface)
+  {
+  };
+
+	virtual ~RaytracerAppState() {};
 
 	virtual void OnKeyPressed(int key) {};
 	virtual void OnKeyReleased(int key) {};
@@ -19,8 +29,6 @@ public:
 
 	virtual void Update() {};
 	virtual void Render() {};
-
-private:
 
 };
 

@@ -1,13 +1,10 @@
 #ifndef RAYTRACER_APP_STATES_H
 #define RAYTRACER_APP_STATES_H
 
-enum class ERaytracerAppState
-{
-	SELECT_SCENE,
-	RENDER
-};
+#include "RaytracerAppMachineInterface.h"
 
 #include "RaytracerAppStates/RaytracerAppState.h"
+#include "RaytracerAppStates/RaytracerAppStateConfigRaytracer.h"
 #include "RaytracerAppStates/RaytracerAppStateSelectScene.h"
 #include "RaytracerAppStates/RaytracerAppStateRender.h"
 

@@ -95,6 +95,9 @@ public:
 		return instance;
 	}
 
+  // is rendering
+  bool IsRendering() { return state == RaytracerState::RENDERING; }
+
   // setters
   void SetAntialiasingSamplesCount(unsigned count) { antialiasingSamplesCount = count; }
   void SetMaxRecursionDepth(unsigned depth) { maxRecursionDepth = depth; }
@@ -117,7 +120,6 @@ public:
 
 		LoadScene(config);
 	}
-
 
 	// start rendering
 	void StartRendering()

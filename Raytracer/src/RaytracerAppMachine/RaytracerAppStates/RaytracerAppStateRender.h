@@ -7,8 +7,11 @@ class RaytracerAppStateRender : public RaytracerAppState
 {
 
 public:
-	RaytracerAppStateRender() {};
-	~RaytracerAppStateRender() {};
+
+  RaytracerAppStateRender(RaytracerAppMachineInterface* stateMachine)
+    : RaytracerAppState(stateMachine)
+  {
+  };
 
 	// OnKeyPressed
 	void OnKeyPressed(int key) override
@@ -21,14 +24,21 @@ public:
 		case GLFW_KEY_C:
 			Raytracer::Get().CancelRendering();
 			break;
-		}
-	}
+    case GLFW_KEY_1:
+      if (!Raytracer::Get().IsRendering())
+      {
+        stateMachine->SetState(ERaytracerAppState::CONFIG_RAYTRACER);
+      }
+      break;
+    case GLFW_KEY_2:
+      if (!Raytracer::Get().IsRendering())
+      {
+        stateMachine->SetState(ERaytracerAppState::SELECT_SCENE);
+      }
+      break;
 
-	void Render() override
-	{
-		// TO-DO: visualize rendering progress
+    }
 	}
-private:
 
 };
 

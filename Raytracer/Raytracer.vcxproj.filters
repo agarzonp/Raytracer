@@ -134,5 +134,11 @@
     <ClInclude Include="src\Geom3D\Shapes\Shapes.h">
       <Filter>Source Files\Geom3D\Shapes</Filter>
     </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppStates\RaytracerAppStateConfigRaytracer.h">
+      <Filter>Source Files\RaytracerAppMachine\RaytracerAppStates</Filter>
+    </ClInclude>
+    <ClInclude Include="src\RaytracerAppMachine\RaytracerAppMachineInterface.h">
+      <Filter>Source Files\RaytracerAppMachine</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
